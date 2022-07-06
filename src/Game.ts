@@ -25,7 +25,7 @@ let map = {
     ]
 }
 
-interface isFoodItem {
+interface IsFoodItem {
     sprite:PIXI.Sprite,
     hit:Boolean,
     lost:Boolean
@@ -53,16 +53,19 @@ export class Game {
         loader.load((loader, resources) => this.doneLoading(loader, resources))
     }
 
+    
 
 
-    doneLoading(loader:any, resources:any) {
+    doneLoading(loader:PIXI.Loader, resources:PIXI.utils.Dict<PIXI.LoaderResource >
+        ) {
         this.app.view.focus();
         let heroFrames:PIXI.Texture[] = [];
         for (let i = 0; i < 8 * 5; i++) {
             let x = i % 8;
             let y = Math.floor(i / 8);
+            let knights = (resources.knights.texture as unknown) as PIXI.BaseTexture
             heroFrames[i] = new PIXI.Texture(
-                resources.knights.texture,
+                knights,
                 new PIXI.Rectangle(x * KNIGHTSIZE, y * KNIGHTSIZE, KNIGHTSIZE, KNIGHTSIZE)
             );
         }
@@ -71,8 +74,9 @@ export class Game {
         for (let i = 0; i < 8 * 8; i++) {
             let x = i % 8;
             let y = Math.floor(i / 8);
+            let food = (resources.food.texture as unknown) as PIXI.BaseTexture
             foodFrames[i] = new PIXI.Texture(
-                resources.food.texture,
+                food,
                 new PIXI.Rectangle(x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE)
             );
         }
@@ -80,8 +84,9 @@ export class Game {
         for (let i = 0; i < 8 * 16; i++) {
             let x = i % 8;
             let y = Math.floor(i / 8);
+            let background = (resources.background.texture as unknown) as PIXI.BaseTexture
             backgroundTexture[i] = new PIXI.Texture(
-                resources.background.texture,
+                background,
                 new PIXI.Rectangle(x * BACKGROUNDTILESIZE, y * BACKGROUNDTILESIZE, BACKGROUNDTILESIZE, BACKGROUNDTILESIZE)
             );
         }
@@ -162,17 +167,21 @@ export class Game {
         loader.onError.add((err:Error)=>console.log(err))
     }
 
+
+    //introduce the player on the screen
     showPlayer():void {
         if (this.hero.y < 360) {
             this.hero.y += 8
         }
     }
 
+
+
     pushFood(frames:PIXI.Texture<PIXI.Resource>[], app:PIXI.Application):void {
-        const foodArray: isFoodItem[] = [];
+        const foodArray: IsFoodItem[] = [];
         const setIntervalHandler:NodeJS.Timer = setInterval(() => {
             let foodItemSprite = new PIXI.Sprite(frames[Math.floor(Math.random() * 63)]);
-            let foodItem :isFoodItem = {
+            let foodItem :IsFoodItem = {
                 sprite: foodItemSprite,
                 hit: false,
                 lost: false
@@ -189,7 +198,10 @@ export class Game {
 
   
     }
-    startGame(items: isFoodItem[], handler:NodeJS.Timer): void {
+
+
+
+    startGame(items: IsFoodItem[], handler:NodeJS.Timer): void {
 
         items.forEach((el) => {
           
@@ -214,7 +226,8 @@ export class Game {
 
     }
 
-    checkIfLost(items:isFoodItem[], handler:NodeJS.Timer):void {
+
+    checkIfLost(items:IsFoodItem[], handler:NodeJS.Timer):void {
         const numberOfLost = items.filter(el => el.lost === true);
         const numberOfHits = items.filter(el => el.hit===true)
         if (numberOfLost.length > 9) {
@@ -228,6 +241,7 @@ export class Game {
 
         }
     }
+
 
 
     hitTestRectangle(r1:any, r2:any): boolean {

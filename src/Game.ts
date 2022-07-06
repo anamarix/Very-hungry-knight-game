@@ -53,7 +53,7 @@ export class Game {
         loader.load((loader, resources) => this.doneLoading(loader, resources))
     }
 
-    
+
 
 
     doneLoading(loader:PIXI.Loader, resources:PIXI.utils.Dict<PIXI.LoaderResource >
@@ -70,6 +70,7 @@ export class Game {
             );
         }
 
+        // create food 
         let foodFrames:PIXI.Texture[] = [];
         for (let i = 0; i < 8 * 8; i++) {
             let x = i % 8;
@@ -80,6 +81,8 @@ export class Game {
                 new PIXI.Rectangle(x * TILESIZE, y * TILESIZE, TILESIZE, TILESIZE)
             );
         }
+
+        // create background tiles
         let backgroundTexture:PIXI.Texture[]= [];
         for (let i = 0; i < 8 * 16; i++) {
             let x = i % 8;
@@ -94,7 +97,7 @@ export class Game {
         //create player
         this.hero = new Hero([heroFrames[0], heroFrames[1], heroFrames[2]], heroFrames[15], heroFrames[21]);
 
-        //create background
+        //create background view
         this.world = new PIXI.Container();
         for (let y = 0; y < map.width; y++) {
             for (let x = 0; x < map.width; x++) {
@@ -176,7 +179,7 @@ export class Game {
     }
 
 
-
+    // start sending food items
     pushFood(frames:PIXI.Texture<PIXI.Resource>[], app:PIXI.Application):void {
         const foodArray: IsFoodItem[] = [];
         const setIntervalHandler:NodeJS.Timer = setInterval(() => {
@@ -200,11 +203,11 @@ export class Game {
     }
 
 
-
+    // game logic
     startGame(items: IsFoodItem[], handler:NodeJS.Timer): void {
 
         items.forEach((el) => {
-          
+          //if the food was touched make it disappear
             if (el.hit) {
                 el.sprite.alpha = 0.0;
             }
@@ -219,6 +222,8 @@ export class Game {
             }
 
             el.sprite.y += 0.1;
+
+        // check if the food item was touched by the player
             if(this.hitTestRectangle(this.hero, el.sprite)) {
                 el.hit = true;
             }
